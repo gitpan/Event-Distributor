@@ -1,5 +1,12 @@
 Revision history for Event-Distributor
 
+0.02    2014/12/10 22:18:13
+        [CHANGES]
+         * Add query-like events
+         * Ensure Signals raise errors as failures if any of their subscribers
+           do
+         * Add TODO note about anonymous signals
+
 0.01    2014/08/16 19:04:30
         First version, released on an unsuspecting world.
 

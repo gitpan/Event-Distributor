@@ -4,7 +4,7 @@
       "Paul Evans <leonerd@leonerd.org.uk>"
    ],
    "dynamic_config" : 1,
-   "generated_by" : "Module::Build version 0.4206",
+   "generated_by" : "Module::Build version 0.421",
    "license" : [
       "perl_5"
    ],
@@ -16,6 +16,7 @@
    "prereqs" : {
       "build" : {
          "requires" : {
+            "Test::Fatal" : "0",
             "Test::More" : "0.88"
          }
       },
@@ -28,11 +29,15 @@
    "provides" : {
       "Event::Distributor" : {
          "file" : "lib/Event/Distributor.pm",
-         "version" : "0.01"
+         "version" : "0.02"
+      },
+      "Event::Distributor::Query" : {
+         "file" : "lib/Event/Distributor/Query.pm",
+         "version" : "0.02"
       },
       "Event::Distributor::Signal" : {
          "file" : "lib/Event/Distributor/Signal.pm",
-         "version" : "0.01"
+         "version" : "0.02"
       }
    },
    "release_status" : "stable",
@@ -41,5 +46,5 @@
          "http://dev.perl.org/licenses/"
       ]
    },
-   "version" : "0.01"
+   "version" : "0.02"
 }

@@ -8,13 +8,14 @@ package Event::Distributor;
 use strict;
 use warnings;
 
-our $VERSION = '0.01';
+our $VERSION = '0.02';
 
 use Carp;
 
 use Future;
 
 use Event::Distributor::Signal;
+use Event::Distributor::Query;
 
 =head1 NAME
 
@@ -77,14 +78,21 @@ L</TODO> and L</SEE ALSO> sections for more detail.
 =head1 EVENTS
 
 Each of the events known by a distributor has a name. Conceptually each also
-has a type, though currently there is only one type of event, a "signal".
+has a type. Currently there are two types of event, a "signal", and a "query".
 
 A signal event simply informs subscribers that some event or condition has
-occurred. Subscribers are not expected to return a meaningful value, nor does
-firing this event return a value. All subscriber functions are invoked
-sequentually and synchronously by a C<fire_*> method (though, of course,
-asynchronous subscribers synchronously return a future instance, which allows
-them to continue working asynchronously).
+occurred. Additional arguments can be passed from the invoker to the
+subscribers, but subscriptions are not expected to return a meaningful value,
+nor does firing this event return a value. All subscriber functions are
+invoked sequentually and synchronously by a C<fire_*> method (though, of
+course, asynchronous subscribers synchronously return a future instance, which
+allows them to continue working asynchronously).
+
+A query event invokes subscriber code expecting a successful return, returning
+the first result that is successful. If a synchronous subscriber returns a
+result, or if an asynchronous one returns a successful immediate Future, then
+no further subscribers are invoked, and that result is taken immediately. Any
+other pending Futures are then cancelled.
 
 =cut
 
@@ -119,6 +127,23 @@ sub declare_signal
       croak "Cannot declare an event '$name' a second time";
 
    $self->{events}{$name} = Event::Distributor::Signal->new;
+}
+
+=head2 $distributor->declare_signal( $name )
+
+Declares a new "signal" event of the given name.
+
+=cut
+
+sub declare_query
+{
+   my $self = shift;
+   my ( $name ) = @_;
+
+   $self->{events}{$name} and
+      croak "Cannot declare an event '$name' a second time";
+
+   $self->{events}{$name} = Event::Distributor::Query->new;
 }
 
 =head2 $distributor->subscribe_async( $name, $code )
@@ -224,6 +249,12 @@ actually be implemented.
 
 =item *
 
+Anonymous signals. Move observer storage into the actual Signal objects, use
+the overall C<Event::Distributor> object largely as a named-lookup store for
+them.
+
+=item *
+
 Unsubscription from events.
 
 =item *
@@ -243,7 +274,8 @@ signal itself?
 
 =item *
 
-Value-returning events - scatter/map/gather pattern.
+More control over the semantics of value-returning events - scatter/map/gather
+pattern.
 
 =item *
 

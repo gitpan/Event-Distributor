@@ -57,17 +57,29 @@ DESCRIPTION
 
 EVENTS
     Each of the events known by a distributor has a name. Conceptually each
-    also has a type, though currently there is only one type of event, a
-    "signal".
+    also has a type. Currently there are two types of event, a "signal", and
+    a "query".
 
     A signal event simply informs subscribers that some event or condition
-    has occurred. Subscribers are not expected to return a meaningful value,
-    nor does firing this event return a value. All subscriber functions are
-    invoked sequentually and synchronously by a `fire_*' method (though, of
-    course, asynchronous subscribers synchronously return a future instance,
-    which allows them to continue working asynchronously).
+    has occurred. Additional arguments can be passed from the invoker to the
+    subscribers, but subscriptions are not expected to return a meaningful
+    value, nor does firing this event return a value. All subscriber
+    functions are invoked sequentually and synchronously by a `fire_*'
+    method (though, of course, asynchronous subscribers synchronously return
+    a future instance, which allows them to continue working
+    asynchronously).
+
+    A query event invokes subscriber code expecting a successful return,
+    returning the first result that is successful. If a synchronous
+    subscriber returns a result, or if an asynchronous one returns a
+    successful immediate Future, then no further subscribers are invoked,
+    and that result is taken immediately. Any other pending Futures are then
+    cancelled.
 
 METHODS
+  $distributor->declare_signal( $name )
+    Declares a new "signal" event of the given name.
+
   $distributor->declare_signal( $name )
     Declares a new "signal" event of the given name.
 
@@ -120,6 +132,10 @@ TODO
     ideas are simply for consideration; there is no explicit promise that
     any of these will actually be implemented.
 
+    *   Anonymous signals. Move observer storage into the actual Signal
+        objects, use the overall `Event::Distributor' object largely as a
+        named-lookup store for them.
+
     *   Unsubscription from events.
 
     *   Define (or document the lack of) ordering between subscriptions of a
@@ -131,7 +147,8 @@ TODO
         deferring the `fire' method. Should this be a new `fire_*' method,
         or a property of the signal itself?
 
-    *   Value-returning events - scatter/map/gather pattern.
+    *   More control over the semantics of value-returning events -
+        scatter/map/gather pattern.
 
     *   Sub-heirarchies of events.
 

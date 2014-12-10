@@ -1,6 +1,7 @@
 Build.PL
 Changes
 lib/Event/Distributor.pm
+lib/Event/Distributor/Query.pm
 lib/Event/Distributor/Signal.pm
 LICENSE
 Makefile.PL
@@ -11,4 +12,5 @@ README
 t/00use.t
 t/01signal.t
 t/02signal-sync.t
+t/03query.t
 t/99pod.t
